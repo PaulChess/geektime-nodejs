@@ -1,19 +1,25 @@
-const koa = require('koa')
-const mount = require('koa-mount')
-const static = require('koa-static')
-const fs = require('fs')
-const { join } = require('path')
+const choices = ['rock', 'paper', 'scissors']
 
-const app = new koa()
+const choices_en_zh_map = {
+  'rock': '石头',
+  'paper': '布',
+  'scissors': '剪刀'
+}
 
-app.use(
-  static(join(__dirname, 'source'))
-)
+const playerChoice = process.argv[process.argv.length - 1]
+const computerChoice = choices[Math.floor(Math.random() * choices.length)]
 
-app.use(
-  mount('/', async ctx => {
-    ctx.body = fs.readFileSync(join(__dirname, 'source', 'index.htm'), 'utf-8')
-  })
-)
+console.log('玩家选择:', choices_en_zh_map[playerChoice])
+console.log('电脑选择:', choices_en_zh_map[computerChoice])
 
-app.listen('3000')
+if (playerChoice === computerChoice) {
+  console.log('平局')
+} else if (
+  (computerChoice === 'rock' && playerChoice === 'paper') ||
+  (computerChoice === 'paper' && playerChoice === 'scissors') ||
+  (computerChoice === 'scissors' && playerChoice === 'rock')
+)  {
+  console.log('You Win!')
+} else {
+  console.log('You Lose~')
+}
