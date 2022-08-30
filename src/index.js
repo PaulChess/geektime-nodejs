@@ -1,19 +1,28 @@
-const koa = require('koa')
-const mount = require('koa-mount')
-const static = require('koa-static')
-const fs = require('fs')
-const { join } = require('path')
+const { graphql, buildSchema } = require('graphql')
 
-const app = new koa()
+/**
+ * 形式上非常类似于 protobuf
+ */
+const schema = buildSchema(`
+  type Query {
+    hello: String
+  }
+`)
 
-app.use(
-  static(join(__dirname, 'source'))
-)
+const rootValue = {
+  hello: () => {
+    return 'hello world'
+  }
+}
 
-app.use(
-  mount('/', async ctx => {
-    ctx.body = fs.readFileSync(join(__dirname, 'source', 'index.htm'), 'utf-8')
+module.exports = function(source) {
+  return graphql({
+    schema,
+    source,
+    rootValue
+  }).then(res => {
+    return res
+    // console.log(res)
+    // console.log(res.data.hello)
   })
-)
-
-app.listen('3000')
+}
